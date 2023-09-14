@@ -10,10 +10,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func executeTemplate(w http.ResponseWriter, filepath string) {
 	w.Header().Set("Content-type", "text/html; charset=utf-8")
-	tplPath := filepath.Join("Templates", "home.gohtml")
-	tpl, err := template.ParseFiles(tplPath)
+	tpl, err := template.ParseFiles(filepath)
 	if err != nil {
 		log.Printf("Parsing template %v", err)
 		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
@@ -25,12 +24,16 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "There was an error executing the template", http.StatusInternalServerError)
 		return
 	}
+}
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := filepath.Join("Templates", "home.gohtml")
+	executeTemplate(w, tplPath) // generally make execute last action
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>Contact Info</h1><p>Reach me at <a href=\"kiet123pascal@gmail.com\">kiet123pascal@gmail.com</a></p>")
+	tplPath := filepath.Join("Templates", "contact.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
