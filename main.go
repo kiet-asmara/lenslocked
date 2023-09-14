@@ -37,14 +37,8 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `
-	<h1>FAQ Page</h1>
-	<ul>
-		<li><b>Is there a free version?</b> Yes there is bro</li>
-		<li><b>What are your support hours?</b> From 9AM-6PM</li>
-	</ul>
-	`)
+	tplPath := filepath.Join("Templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 type Router struct{}
