@@ -2,40 +2,37 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/kiet-asmara/lenslocked/views"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	tplPath := filepath.Join("templates", "home.gohtml")
-	tpl, err := template.ParseFiles(tplPath)
+func executeTemplate(w http.ResponseWriter, filepath string) {
+	t, err := views.Parse(filepath)
 	if err != nil {
 		log.Printf("parsing template: %v", err)
-		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		log.Printf("executing template: %v", err)
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		return
-	}
+	t.Execute(w, nil)
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := filepath.Join("templates", "home.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, "<h1>Contact Page</h1><p>Get in touch with me! <a href=\"mailto:kiet123pascal@gmail.com\">kiet123pascal@gmail.com</a>,")
+	tplPath := filepath.Join("templates", "contact.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>FAQ</h1><p>Q: Is there a free version?</p><p>A: Nope</p></br><p>Q: How do I contact support?</p><p>A: Email us - <a href=\"mailto:kiet123pascal@gmail.com\">kiet123pascal@gmail.com</a>")
+	tplPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 // func pathHandler(w http.ResponseWriter, r *http.Request) {
