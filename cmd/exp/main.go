@@ -1,35 +1,32 @@
 package main
 
 import (
-	"html/template"
-	"os"
+	"errors"
+	"fmt"
 )
 
-type User struct {
-	Name string
-	Age  int
-	Meta UserMeta
-}
-
-type UserMeta struct {
-	Visits int
-}
-
 func main() {
-	t, err := template.ParseFiles("hello.gohtml")
+	err := CreateOrg()
+	fmt.Println(err)
+
+}
+
+func Connect() error {
+	return errors.New("conn failed")
+}
+
+func CreateUser() error {
+	err := Connect()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("create user: %w", err)
 	}
+	return nil
+}
 
-	user := User{
-		Name: "John Doe",
-		Age:  20,
-		Meta: UserMeta{Visits: 4},
-	}
-
-	err = t.Execute(os.Stdout, user)
+func CreateOrg() error {
+	err := CreateUser()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("create org: %w", err)
 	}
-
+	return nil
 }
