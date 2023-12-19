@@ -23,8 +23,8 @@ func Must(t Template, err error) Template {
 // difference is parse fs to accept variadic parameters to detect embedded commands
 // eg: from parent folder run lenslocked/app.exe
 // couldnt be read before since relative path
-func ParseFS(fs fs.FS, pattern string) (Template, error) {
-	tpl, err := template.ParseFS(fs, pattern)
+func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
+	tpl, err := template.ParseFS(fs, pattern...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
