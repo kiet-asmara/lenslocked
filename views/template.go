@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+// must added to create error that can panic without cluttering code
+// and return a template to parse
 func Must(t Template, err error) Template {
 	if err != nil {
 		panic(err)
@@ -15,6 +17,12 @@ func Must(t Template, err error) Template {
 	return t
 }
 
+// errors can be wrapped to include other messages (strings) inside
+// used to hide details/add abstraction or detail the error??
+
+// difference is parse fs to accept variadic parameters to detect embedded commands
+// eg: from parent folder run lenslocked/app.exe
+// couldnt be read before since relative path
 func ParseFS(fs fs.FS, pattern string) (Template, error) {
 	tpl, err := template.ParseFS(fs, pattern)
 	if err != nil {

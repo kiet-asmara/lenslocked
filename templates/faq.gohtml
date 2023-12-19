@@ -3,3 +3,17 @@
 <p>A: Nope</p></br>
 <p>Q: How do I contact support?</p>
 <p>A: Email us - <a href="mailto:kiet123pascal@gmail.com">kiet123pascal@gmail.com</a></p>
+
+
+<ul>
+    {{range .}}
+        {{template "qa" .}}
+    {{end}}
+</ul>
+
+
+
+{{define "qa"}}
+<p>Q: {{.Question}}</p>
+<p>A: {{.Answer}}</p></br>
+{{end}}
