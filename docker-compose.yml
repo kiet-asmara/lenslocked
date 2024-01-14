@@ -24,8 +24,11 @@ services:
     # 3333 is unused port to not block other services
 
 # use docker compose up -d for background running (daemon = background)
+
+# how to run psql on docker
 # docker exec -it lenslocked-db-1 /usr/bin/psql -U baloo -d lenslocked
 # it = interactive tty
+
 
 # docker compose exec -it db psql -U baloo -d lenslocked
 # db = service being used

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/kiet-asmara/lenslocked/models"
 )
 
 type DbConfig struct {
@@ -16,8 +17,9 @@ type DbConfig struct {
 	SSLMode  string
 }
 
+// urutan host user pass gabole kebalik (SASL error)
 func (cfg DbConfig) String() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode)
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", cfg.Host, cfg.User, cfg.Password, cfg.Database, cfg.Port)
 }
 
 func main() {
@@ -42,4 +44,15 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("connected to db")
+
+	us := models.UserService{
+		DB: db,
+	}
+
+	user, err := us.Create("john@gmail.com", "12345")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(user)
 }
