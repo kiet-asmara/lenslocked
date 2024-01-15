@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // need to close db w/db.Close() later
@@ -21,8 +21,8 @@ func DefaultPostgresConfig() PostgresConfig {
 	return PostgresConfig{
 		Host:     "localhost",
 		Port:     "5432",
-		User:     "baloo",
-		Password: "junglebook",
+		User:     "postgres",
+		Password: "12345",
 		Database: "lenslocked",
 		SSLMode:  "disable",
 	}
@@ -39,5 +39,5 @@ type PostgresConfig struct {
 
 // urutan host user pass gabole kebalik (SASL error)
 func (cfg PostgresConfig) String() string {
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", cfg.Host, cfg.User, cfg.Password, cfg.Database, cfg.Port)
+	return fmt.Sprintf("user=%s password=%s host=%s port=%s database=%s sslmode=%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database, cfg.SSLMode)
 }

@@ -6,12 +6,12 @@ services:
     image: postgres # image to be used
     restart: always # always try to restart if stops running
     environment: # environment variablees
-      POSTGRES_USER: baloo
-      POSTGRES_PASSWORD: junglebook
-      POSTGRES_DB: lenslocked
+      - POSTGRES_USER=baloo
+      - POSTGRES_PASSWORD=junglebook
+      - POSTGRES_DB=lenslocked
+      - DATABASE_HOST=localhost # TODO: fix broken
     ports:
       - 5432:5432 # port on our machine:container port
-
  # adminer gives UI for database
   adminer:
     image: adminer
