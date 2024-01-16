@@ -22,9 +22,8 @@ func (u Users) New(w http.ResponseWriter, r *http.Request) {
 		Email string
 	}
 	data.Email = r.FormValue("email")
-
 	// we need a view to render
-	u.Templates.New.Execute(w, data)
+	u.Templates.New.Execute(w, r, data)
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +47,7 @@ func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Email = r.FormValue("email")
 	// we need a view to render
-	u.Templates.SignIn.Execute(w, data)
+	u.Templates.SignIn.Execute(w, r, data)
 }
 
 func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
@@ -67,9 +66,10 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 
 	// must be placed before anything is written to writer
 	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
-		Path:  "/",
+		Name:     "email",
+		Value:    user.Email,
+		Path:     "/",
+		HttpOnly: true, // to prevent JS script from accessing cookies console.log(document.cookie) to test
 	}
 	http.SetCookie(w, &cookie)
 

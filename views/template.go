@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/csrf"
 )
 
 // must added to create error that can panic without cluttering code
@@ -24,20 +26,29 @@ func Must(t Template, err error) Template {
 // eg: from parent folder run lenslocked/app.exe
 // couldnt be read before since relative path
 func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
-	tpl, err := template.ParseFS(fs, pattern...)
+	tpl := template.New(pattern[0])
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"csrfField": func() template.HTML {
+				return `<!-- TODO: Implement csrfField -->` // inject function to html
+			},
+		},
+	)
+	tpl, err := tpl.ParseFS(fs, pattern...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
+
 	return Template{htmlTpl: tpl}, nil
 }
 
-func Parse(filepath string) (Template, error) {
-	tpl, err := template.ParseFiles(filepath)
-	if err != nil {
-		return Template{}, fmt.Errorf("parsing template: %w", err)
-	}
-	return Template{htmlTpl: tpl}, nil
-}
+// func Parse(filepath string) (Template, error) {
+// 	tpl, err := template.ParseFiles(filepath)
+// 	if err != nil {
+// 		return Template{}, fmt.Errorf("parsing template: %w", err)
+// 	}
+// 	return Template{htmlTpl: tpl}, nil
+// }
 
 // template type
 type Template struct {
@@ -45,13 +56,31 @@ type Template struct {
 }
 
 // execute parsed template
-func (t Template) Execute(w http.ResponseWriter, data interface{}) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+	tpl, err := t.htmlTpl.Clone() //clone erases race condition since htmltpl is a pointer
+	if err != nil {
+		log.Printf("cloning template: %v", err)
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		return
+	}
 
-	err := t.htmlTpl.Execute(w, data)
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"csrfField": func() template.HTML {
+				return csrf.TemplateField(r) // inject function to html
+			},
+		},
+	)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	err = tpl.Execute(w, data)
 	if err != nil {
 		log.Printf("executing template: %v", err)
 		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
 		return
 	}
 }
+
+// steps in executing a function in template (csrf in this case)
+// 1. define a placeholder function in parseFS before template parse
+// 2. update placeholder in execute

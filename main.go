@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 	"github.com/kiet-asmara/lenslocked/controllers"
 	"github.com/kiet-asmara/lenslocked/models"
 	"github.com/kiet-asmara/lenslocked/templates"
@@ -53,7 +54,12 @@ func main() {
 		http.Error(w, "page not found", http.StatusNotFound)
 	})
 
+	// csrf middlewares
+	CSRF := csrf.Protect([]byte("32-byte-long-auth-key"), csrf.Secure(false))
+	// csrf.secure makes sure server is https only
+	// set to false for development
+
 	fmt.Println("Starting server on :8080")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", CSRF(r))
 
 }
