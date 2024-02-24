@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+// generate random string for session token
+
 func Bytes(n int) ([]byte, error) {
 	b := make([]byte, n)
 	nRead, err := rand.Read(b)
